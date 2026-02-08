@@ -1,18 +1,18 @@
-# Pulse Dashboard
+# Pulse PDF Converter
 
-A modern, comprehensive dashboard application built with Next.js, TypeScript, and Tailwind CSS. Pulse Dashboard provides a beautiful and intuitive interface for managing and monitoring business metrics.
+A modern, web-based text to PDF converter built with Next.js, TypeScript, and jsPDF. Convert your plain text into professionally formatted PDF documents with ease.
 
-![Dashboard Screenshot](./public/dashbaord.png)
+![PDF Converter](./public/converter-preview.png)
 
 ## Features
 
-- 🎨 **Modern UI** - Built with shadcn/ui components and Tailwind CSS
-- 🔐 **Authentication** - Login and registration forms with input groups
-- 📊 **Dashboard** - Comprehensive dashboard with sidebar navigation
+- 🎨 **Modern UI** - Clean interface built with shadcn/ui components
+- 📄 **Simple Conversion** - Paste text and generate PDF instantly
 - 🌙 **Dark Mode** - Full dark mode support
-- 📱 **Responsive** - Mobile-first responsive design
-- ⚡ **Fast** - Built with Next.js 16 and React 19
-- 🗄️ **Database Ready** - PostgreSQL schema included for user management
+- 📱 **Responsive** - Works on desktop, tablet, and mobile
+- ⚡ **Fast** - Instant PDF generation in the browser
+- 💾 **Auto Download** - PDFs download automatically
+- 🎯 **Custom Naming** - Name your PDF files before generation
 
 ## Tech Stack
 
@@ -20,8 +20,8 @@ A modern, comprehensive dashboard application built with Next.js, TypeScript, an
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4
 - **UI Components**: shadcn/ui (Radix UI primitives)
+- **PDF Generation**: jsPDF
 - **Icons**: Lucide React
-- **Database**: PostgreSQL (Supabase)
 
 ## Getting Started
 
@@ -29,7 +29,6 @@ A modern, comprehensive dashboard application built with Next.js, TypeScript, an
 
 - Node.js 18+ 
 - npm, yarn, pnpm, or bun
-- PostgreSQL database (or Supabase account)
 
 ### Installation
 
@@ -42,62 +41,82 @@ cd PulseDashboard
 2. Install dependencies:
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
 ```
 
-3. Set up environment variables:
+3. Run the cleanup script (removes unnecessary template files):
 ```bash
-cp .env.example .env
+./cleanup.sh
 ```
 
-4. Fill in your environment variables in `.env`:
-   - Add your Supabase URL
-   - Add your Supabase anon key
-   - Add your Supabase service role key (if needed)
-
-5. Set up the database:
-   - Run the SQL script in `database/users.sql` on your PostgreSQL database
-   - Or use Supabase SQL editor to execute the script
-
-6. Run the development server:
+4. Start the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-7. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
+
+## Usage
+
+### Basic Usage
+
+1. Navigate to the dashboard at `/dashboard`
+2. Enter a name for your PDF file
+3. Paste or type your text in the text area
+4. Click "Generate PDF"
+5. Your PDF will automatically download
+
+### Advanced Features
+
+#### Markdown Support
+Use simple markdown formatting:
+
+```
+# Large Title
+## Heading
+Regular paragraph text
+```
+
+To enable markdown, update the page to use `generatePDFFromMarkdown()`.
+
+#### Custom Formatting
+Modify PDF appearance programmatically:
+
+```typescript
+import { generatePDF } from "@/lib/pdf-generator"
+
+await generatePDF(text, fileName, {
+  fontSize: 14,
+  lineHeight: 1.8,
+  marginLeft: 25,
+  marginRight: 25,
+  fontFamily: "times"
+})
+```
 
 ## Project Structure
 
 ```
-PulseDashboard/
+PulsePDF/
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/          # Authentication pages
-│   │   │   ├── layout.tsx    # Auth layout wrapper
-│   │   │   ├── login/       # Login page
-│   │   │   └── register/    # Registration page
-│   │   ├── dashboard/       # Dashboard pages
-│   │   │   ├── layout.tsx   # Dashboard layout with sidebar
-│   │   │   └── page.tsx     # Dashboard home
-│   │   ├── layout.tsx       # Root layout
-│   │   └── page.tsx         # Landing page
+│   │   ├── dashboard/
+│   │   │   ├── layout.tsx      # Dashboard layout
+│   │   │   └── page.tsx        # PDF Converter page
+│   │   ├── globals.css
+│   │   └── layout.tsx          # Root layout
 │   ├── components/
-│   │   ├── auth/            # Auth form components
-│   │   ├── layouts/         # Layout components
-│   │   └── ui/              # shadcn/ui components
-│   ├── hooks/               # Custom React hooks
-│   └── lib/                 # Utility functions
-├── database/
-│   └── users.sql            # Database schema
-├── public/                  # Static assets
-└── .env.example            # Environment variables template
+│   │   ├── layouts/            # Layout components
+│   │   ├── shared/             # Shared components
+│   │   └── ui/                 # UI components
+│   ├── lib/
+│   │   ├── utils.ts
+│   │   └── pdf-generator.ts    # PDF generation logic
+│   └── hooks/
+│       └── use-mobile.ts
+├── public/                     # Static assets
+├── cleanup.sh                  # Cleanup script
+├── SETUP_GUIDE.md             # Detailed setup guide
+└── package.json
 ```
 
 ## Available Scripts
@@ -107,53 +126,105 @@ PulseDashboard/
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
-## Database Schema
+## PDF Generation API
 
-The project includes a PostgreSQL schema for user management. The `users` table includes:
+### `generatePDF(text, fileName, options)`
+Basic text to PDF conversion.
 
-- `id` - Primary key
-- `first_name` - User's first name
-- `last_name` - User's last name
-- `email` - Unique email address
-- `phone_number` - Phone number
-- `password_hash` - Hashed password
-- `created_date` - Account creation timestamp
-- `last_login_date` - Last login timestamp
-- `updated_at` - Auto-updated timestamp
+**Parameters:**
+- `text` (string) - The text to convert
+- `fileName` (string) - Name of the PDF file (without .pdf)
+- `options` (object) - Optional formatting options
+  - `fontSize` (number) - Font size in points (default: 12)
+  - `lineHeight` (number) - Line height multiplier (default: 1.5)
+  - `marginLeft` (number) - Left margin in mm (default: 20)
+  - `marginRight` (number) - Right margin in mm (default: 20)
+  - `marginTop` (number) - Top margin in mm (default: 20)
+  - `marginBottom` (number) - Bottom margin in mm (default: 20)
+  - `fontFamily` (string) - Font family: "helvetica", "times", or "courier"
 
-See `database/users.sql` for the complete schema.
+### `generateFormattedPDF(sections, fileName)`
+Create PDFs with multiple sections and different formatting.
 
-## Environment Variables
+**Parameters:**
+- `sections` (array) - Array of section objects
+  - `text` (string) - Section text
+  - `type` (string) - "title", "heading", or "body"
+  - `fontSize` (number) - Optional custom font size
+  - `bold` (boolean) - Whether to use bold font
+- `fileName` (string) - Name of the PDF file
 
-Create a `.env` file in the root directory with the following variables:
+### `generatePDFFromMarkdown(text, fileName)`
+Parse markdown-like syntax and create formatted PDF.
 
-```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+**Supported Markdown:**
+- `# Title` - Large title text
+- `## Heading` - Heading text
+- Regular text - Body text
+
+## Customization
+
+### Changing Default Settings
+
+Edit `/src/lib/pdf-generator.ts` to change default PDF settings:
+
+```typescript
+const {
+  fontSize = 12,        // Change default font size
+  lineHeight = 1.5,     // Change line spacing
+  marginLeft = 20,      // Adjust margins
+  // ...
+} = options
 ```
 
-See `.env.example` for the template.
+### Adding New Features
 
-## Authentication
+1. **Text Formatting**: Add bold, italic, underline buttons
+2. **Color Support**: Allow users to change text color
+3. **Page Orientation**: Support landscape mode
+4. **Multiple Pages**: Better multi-page document support
+5. **Templates**: Pre-defined document templates
 
-The application includes:
+## Deployment
 
-- **Landing Page** (`/`) - Welcome page with navigation to login/register
-- **Login Page** (`/login`) - User authentication
-- **Register Page** (`/register`) - New user registration
+### Vercel (Recommended)
 
-All auth pages use InputGroup components from shadcn/ui for a consistent, modern look.
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Deploy automatically
 
-## Dashboard
+### Other Platforms
 
-The dashboard (`/dashboard`) includes:
+- **Netlify**: Connect repository and deploy
+- **AWS Amplify**: Configure build settings
+- **DigitalOcean**: Use App Platform
 
-- Sidebar navigation
-- Breadcrumb navigation
-- Responsive layout
-- Dark mode support
+## Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome)
+
+## Troubleshooting
+
+### PDF Not Downloading
+- Check browser download settings
+- Disable pop-up blockers
+- Try a different browser
+
+### Text Formatting Issues
+- Reduce font size for long text
+- Increase margins
+- Break long words with hyphens
+
+### Build Errors
+```bash
+# Clear cache and reinstall
+rm -rf node_modules .next
+npm install
+npm run dev
+```
 
 ## Contributing
 
@@ -165,8 +236,19 @@ The dashboard (`/dashboard`) includes:
 
 ## License
 
-This project is private and proprietary.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- PDF generation powered by [jsPDF](https://github.com/parallax/jsPDF)
+- Icons by [Lucide](https://lucide.dev/)
 
 ## Support
 
-For support, please open an issue in the repository.
+For support, please open an issue in the repository or contact the maintainers.
+
+---
+
+Made with ❤️ using Next.js and jsPDF
