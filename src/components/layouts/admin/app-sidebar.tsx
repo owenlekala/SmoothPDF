@@ -6,15 +6,10 @@ import {
   LayoutDashboard,
   LifeBuoy,
   Send,
-  Users,
-  Component,
-  BarChart3,
 } from "lucide-react"
 
 import { NavMain } from "@/components/layouts/admin/nav-main"
-import { NavProjects } from "@/components/layouts/admin/nav-projects"
-import { NavSecondary } from "@/components/layouts/admin/nav-secondary"
-import { NavUser } from "@/components/layouts/admin/nav-user"
+
 import {
   Sidebar,
   SidebarContent,
@@ -33,25 +28,10 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "PDF Converter",
       url: "/dashboard",
       icon: LayoutDashboard,
       isActive: true,
-    },
-    {
-      title: "Users",
-      url: "/dashboard/users",
-      icon: Users,
-    },
-    {
-      title: "Components",
-      url: "/dashboard/components",
-      icon: Component,
-    },
-    {
-      title: "Charts",
-      url: "/dashboard/charts",
-      icon: BarChart3,
     },
   ],
   navSecondary: [
@@ -82,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium ">Pulse</span>
-                  <span className="truncate text-xs">Dashboard</span>
+                  <span className="truncate text-xs">PDF Converter</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -91,12 +71,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      
     </Sidebar>
   )
 }
